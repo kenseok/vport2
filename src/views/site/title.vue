@@ -1,5 +1,4 @@
 <template>
-
     <v-toolbar-title>
         {{ title }}
         <v-btn icon @click="openDialog"><v-icon>mdi-pencil</v-icon></v-btn>
