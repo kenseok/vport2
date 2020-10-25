@@ -22,3 +22,10 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+
+
+### firebase not found
+npm bin -g
+export PATH=$PATH:`npm bin -g`  
