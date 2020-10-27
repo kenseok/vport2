@@ -25,3 +25,4 @@ exports.deleteUser = functions.auth.user().onDelete(async (user) => {
   const { uid } = user
   db.ref('users').child(uid).remove()
 })
+
