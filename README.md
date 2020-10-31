@@ -41,3 +41,14 @@ service cloud.firestore {
     }
   }
 }
+
+### firebase item._id
+<template v-slot:[`item._id`]="{ item }">
+
+### firebase node 10 version upgrade
+
+
+### node module change
+https://www.npmjs.com/package/n
+$ sudo n 10.8
+$ sudo n stable 이런식..
