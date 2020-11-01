@@ -1,17 +1,12 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-    <v-app-bar-nav-icon @click="drawer = !drawer" />
-    <site-title :title="site.title"></site-title>
-    <v-spacer/>
-    <site-sign></site-sign>
+    <v-app-bar app color="primary" dark>
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      <site-title :title="site.title"></site-title>
+      <v-spacer/>
+      <site-sign></site-sign>
     </v-app-bar>
     <v-navigation-drawer app v-model="drawer" width="400">
-      <v-divider></v-divider>
       <site-menu :items="site.menu"></site-menu>
     </v-navigation-drawer>
     <v-content>
@@ -61,7 +56,7 @@ export default {
             ]
           }
         ],
-        title: 'My Title',
+        title: '나의 타이틀입니다',
         footer: '푸터입니다'
       }
     }

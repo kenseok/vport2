@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 /dist
-
+google-cloud-sdk
 
 # local env files
 .env.local

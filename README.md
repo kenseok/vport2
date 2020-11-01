@@ -30,6 +30,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 npm bin -g
 export PATH=$PATH:`npm bin -g`  
 
+### firebase sdk cors.json error
+export PATH="/usr/lib/google-cloud-sdk/bin:$PATH"
 
 ### firestore basic code 
 rules_version = '2';
@@ -41,3 +43,14 @@ service cloud.firestore {
     }
   }
 }
+
+### firebase item._id
+<template v-slot:[`item._id`]="{ item }">
+
+### firebase node 10 version upgrade
+
+
+### node module change
+https://www.npmjs.com/package/n
+$ sudo n 10.8
+$ sudo n stable 이런식..
