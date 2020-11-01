@@ -16,6 +16,10 @@
 <br />
 
 
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/49246683/97810298-3bedd500-1cb6-11eb-96ee-128ad0be8b43.gif)
+
+
+
 ![스크린샷 2020-11-02 02 32 13](https://user-images.githubusercontent.com/49246683/97810092-b158a600-1cb4-11eb-8a18-e0a0f9f1a8f0.png)
 
 board
