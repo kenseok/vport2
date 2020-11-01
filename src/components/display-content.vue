@@ -6,6 +6,7 @@
       </v-toolbar-title>
       <v-spacer/>
       <v-btn @click="articleWrite" icon><v-icon>mdi-pencil</v-icon></v-btn>
+      <v-btn @click="remove" icon><v-icon>mdi-delete</v-icon></v-btn>
       <v-btn @click="$emit('close')" icon><v-icon>mdi-close</v-icon></v-btn>
     </v-toolbar>
     <v-card-text>
@@ -39,7 +40,8 @@ export default {
   props: ['document', 'item'],
   data () {
     return {
-      content: ''
+      content: '',
+      ref: this.$firebase.firestore().collection('boards').doc(this.document)
     }
   },
   mounted () {
@@ -50,13 +52,24 @@ export default {
     async fetch () {
       const r = await axios.get(this.item.url)
       this.content = r.data
-      await this.$firebase.firestore().collection('boards').doc(this.document).collection('articles').doc(this.item.id)
+      await this.ref.collection('articles').doc(this.item.id)
         .update({
           readCount: this.$firebase.firestore.FieldValue.increment(1)
         })
     },
     async articleWrite () {
       this.$router.push({ path: this.$route.path + '/article-write', query: { articleId: this.item.id } })
+    },
+    // 게시물삭제할때 batch를 사용해서 업데이트 카운트-1,아티클지워주고 안전하게 데이터지우기로 넘어가게 된다
+    async remove () {
+      const batch = this.$firebase.firestore().batch()
+      batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(-1) })
+      batch.delete(this.ref.collection('articles').doc(this.item.id))
+      await batch.commit()
+      // await this.ref.update({ count: this.$firebase.firestore.FieldValue.increment(-1) })
+      // await this.ref.collection('articles').doc(this.item.id).delete()
+      await this.$firebase.storage().ref().child('boards').child(this.document).child(this.item.id + '.md').delete()
+      this.$emit('close')
     }
   }
 }
