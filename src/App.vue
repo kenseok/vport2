@@ -6,8 +6,13 @@
       <v-spacer/>
       <site-sign></site-sign>
     </v-app-bar>
-    <v-navigation-drawer app v-model="drawer" width="400">
-      <site-menu :items="site.menu"></site-menu>
+    <v-navigation-drawer
+      app
+      v-model="drawer"
+      :width="$store.state.editable ? 380 : null"
+      >
+      <!-- :width="$store.state.editable ? 380 : null" -->
+      <site-menu :items="site.menu" @close="drawer=false"></site-menu>
     </v-navigation-drawer>
     <v-main>
       <router-view/>
@@ -80,3 +85,8 @@ export default {
   }
 }
 </script>
+<style>
+.white-space {
+  white-space: pre-wrap;
+}
+</style>

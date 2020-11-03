@@ -5,7 +5,7 @@
       <v-btn icon v-on="on"><v-icon>mdi-account</v-icon></v-btn>
     </template>
     <v-card>
-      <v-card-title>Login</v-card-title>
+      <v-card-title>로그인</v-card-title>
       <v-divider/>
       <v-card-actions>
         <v-btn color="red" dark @click="signInWithGoogle" block><v-icon left>mdi-google</v-icon> 구글로 로그인</v-btn>
@@ -18,15 +18,15 @@
   <v-menu offset-y v-else>
     <template v-slot:activator="{ on }">
       <v-btn icon v-on="on">
-        <v-avatar size="40">
+        <v-avatar size="32">
           <v-img :src="$store.state.fireUser.photoURL"></v-img>
         </v-avatar>
       </v-btn>
     </template>
     <v-card>
-      <v-card-title>Imformation</v-card-title>
+      <v-card-title>정보</v-card-title>
       <v-card-actions>
-        <v-btn color="" dark @click="signOut" block>Logout</v-btn>
+        <v-btn color="" dark @click="signOut" block>로그아웃</v-btn>
       </v-card-actions>
     </v-card>
   </v-menu>

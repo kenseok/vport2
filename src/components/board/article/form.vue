@@ -1,5 +1,13 @@
 <template>
-  <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+  <v-container fluid v-if="!loaded">
+    <v-skeleton-loader type="article"></v-skeleton-loader>
+  </v-container>
+  <v-container fluid v-else-if="loaded && !board">
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판 정보를 불러오지 못했습니다
+    </v-alert>
+  </v-container>
+  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
     <v-form>
       <v-card :loading="loading" outlined :tile="$vuetify.breakpoint.xs">
         <v-toolbar color="transparent" dense flat>
@@ -31,9 +39,18 @@
               <v-text-field v-model="form.title" outlined label="제목" hide-details></v-text-field>
             </v-col>
             <v-col cols="12">
-              <editor v-if="articleId === 'new'" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" height="400px" :options="{ }"></editor>
+              <editor
+                v-if="!exists"
+                :initialValue="form.content"
+                ref="editor" initialEditType="wysiwyg" height="400px"
+                :options="options"
+                ></editor>
               <template v-else>
-                <editor v-if="form.content" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" height="400px" :options="{ }"></editor>
+                <editor
+                  v-if="form.content"
+                  :initialValue="form.content"
+                  ref="editor" initialEditType="wysiwyg" height="400px"
+                  :options="options"></editor>
                 <v-container v-else>
                   <v-row justify="center" align="center">
                     <v-progress-circular indeterminate></v-progress-circular>
@@ -43,6 +60,13 @@
             </v-col>
           </v-row>
         </v-card-text>
+        <v-divider/>
+        <v-card-actions>
+          <v-spacer/>
+          <v-btn @click="save" :disabled="!user" text color="primary">
+            <v-icon left>mdi-content-save</v-icon> 저장
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-form>
   </v-container>
@@ -50,22 +74,31 @@
 <script>
 import axios from 'axios'
 import getSummary from '@/util/getSummary'
+import imageCompress from '@/util/imageCompress'
 
 export default {
   props: ['boardId', 'articleId', 'action'],
   data () {
     return {
       form: {
-        category: '일반',
+        category: '',
         tags: [],
         title: '',
-        content: ''
+        content: '',
+        images: []
       },
       exists: false,
       loading: false,
       ref: null,
       article: null,
-      board: null
+      board: null,
+      loaded: false,
+      options: {
+        language: 'ko',
+        hooks: {
+          addImageBlobHook: this.addImageBlobHook
+        }
+      }
     }
   },
   computed: {
@@ -85,13 +118,16 @@ export default {
     this.fetch()
   },
   destroyed () {
+    // if (this.exists) return
+
   },
   methods: {
     async fetch () {
       this.ref = this.$firebase.firestore().collection('boards').doc(this.boardId)
+      this.loaded = false
       const docBoard = await this.ref.get()
+      this.loaded = true
       this.board = docBoard.data()
-      if (this.articleId === 'new') return
       const doc = await this.ref.collection('articles').doc(this.articleId).get()
       this.exists = doc.exists
       if (!this.exists) return
@@ -100,6 +136,8 @@ export default {
       this.form.title = item.title
       this.form.category = item.category
       this.form.tags = item.tags
+      this.form.images = item.images
+      if (!item.images) this.form.images = []
       const { data } = await axios.get(item.url)
       this.form.content = data
     },
@@ -111,20 +149,19 @@ export default {
       if (!md) throw Error('내용은 필수 항목입니다')
       this.loading = true
       try {
-        const createdAt = new Date()
         const doc = {
           title: this.form.title,
           category: this.form.category,
           tags: this.form.tags,
-          updatedAt: createdAt,
-          summary: getSummary(md, 300)
+          images: this.findImagesFromDoc(md, this.form.images), // this.form.images,
+          updatedAt: new Date(),
+          summary: getSummary(md, 300, 'data:image')
         }
-        if (this.articleId === 'new') {
-          const id = createdAt.getTime().toString()
-          const fn = id + '-' + this.fireUser.uid + '.md'
+        if (!this.exists) {
+          const fn = this.articleId + '-' + this.fireUser.uid + '.md'
           const sn = await this.$firebase.storage().ref().child('boards').child(this.boardId).child(fn).putString(md)
           doc.url = await sn.ref.getDownloadURL()
-          doc.createdAt = createdAt
+          doc.createdAt = new Date()
           doc.commentCount = 0
           doc.readCount = 0
           doc.uid = this.$store.state.fireUser.uid
@@ -135,7 +172,8 @@ export default {
           }
           doc.likeCount = 0
           doc.likeUids = []
-          await this.ref.collection('articles').doc(id).set(doc)
+          await this.ref.collection('articles').doc(this.articleId).set(doc)
+          this.exists = true
           this.$router.push('/board/' + this.boardId)
         } else {
           const fn = this.articleId + '-' + this.article.uid + '.md'
@@ -146,6 +184,49 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    findImagesFromDoc (md, images) {
+      const filteredImages = images.filter(image => {
+        return md.indexOf(image.url) >= 0
+      })
+      return filteredImages
+    },
+    async imageUpload (file) {
+      if (!this.fireUser) throw Error('로그인이 필요합니다')
+      const thumbnail = await imageCompress(file)
+      const image = {
+        size: file.size,
+        id: '',
+        url: '',
+        thumbSize: thumbnail.size,
+        thumbId: '',
+        thumbUrl: ''
+      }
+
+      image.id = new Date().getTime() + '-' + this.fireUser.uid + '-' + file.name
+      const sn = await this.$firebase.storage().ref()
+        .child('images').child('boards')
+        .child(this.boardId).child(this.articleId).child(image.id)
+        .put(file)
+      image.url = await sn.ref.getDownloadURL()
+
+      image.thumbId = new Date().getTime() + '-' + this.fireUser.uid + '-thumb-' + file.name
+      const snt = await this.$firebase.storage().ref()
+        .child('images').child('boards')
+        .child(this.boardId).child(this.articleId).child(image.thumbId)
+        .put(thumbnail)
+      image.thumbUrl = await snt.ref.getDownloadURL()
+
+      this.form.images.push(image)
+      return image
+    },
+
+    addImageBlobHook (blob, callback) {
+      this.imageUpload(blob)
+        .then(image => {
+          callback(image.url, 'img')
+        })
+        .catch(console.error)
     }
   }
 }
