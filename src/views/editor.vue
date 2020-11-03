@@ -1,14 +1,14 @@
 <template>
-    <v-sheet>
-        <v-subheader>
-        edddd
-        <v-spacer />
-        <v-btn @click="toggle=!toggle">toggle</v-btn>
-        <v-btn @click="read">read</v-btn>
-        </v-subheader>
-        <editor :options="options" :initialValue="text" ref="editor"></editor>
-        <viewer v-if="toggle" :initialValue="text"></viewer>
-    </v-sheet>
+  <v-sheet>
+    <v-subheader>
+      editor
+      <v-spacer/>
+      <v-btn @click="toggle=!toggle">toggle</v-btn>
+      <v-btn @click="read">read</v-btn>
+    </v-subheader>
+    <editor :options="options" :initialValue="text" ref="editor"></editor>
+    <viewer v-if="toggle" :initialValue="text"></viewer>
+  </v-sheet>
 </template>
 <script>
 export default {
@@ -17,7 +17,7 @@ export default {
       options: {
         language: 'ko'
       },
-      text: '# abcdegf',
+      text: '# abcdefg',
       toggle: false
     }
   },
