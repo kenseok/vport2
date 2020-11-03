@@ -1,67 +1,29 @@
-# vport2
+# Vue$firebase boarder site
 
-## Project setup
-```
-npm install
-```
+* Front-end
+  -  Vue.js
+  -  Vuetify.js
+  
+  
+* Back-end
+  - Firebase
+  - Authentication
+  - Functions
+  - Storage
+  - Database
+      -Firestore
+      -Realtime
+<br />
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/49246683/97810298-3bedd500-1cb6-11eb-96ee-128ad0be8b43.gif)
 
 
 
+![스크린샷 2020-11-02 02 32 13](https://user-images.githubusercontent.com/49246683/97810092-b158a600-1cb4-11eb-8a18-e0a0f9f1a8f0.png)
 
-### firebase not found
-npm bin -g
-export PATH=$PATH:`npm bin -g`  
+board
+![스크린샷 2020-11-02 02 33 05](https://user-images.githubusercontent.com/49246683/97810093-b3226980-1cb4-11eb-9d17-11c812fad464.png)
 
-### firebase sdk cors.json error
-export PATH="/usr/lib/google-cloud-sdk/bin:$PATH"
-
-### firestore basic code 
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2020, 11, 24);
-    }
-  }
-}
-
-### firebase item._id
-<template v-slot:[`item._id`]="{ item }">
-
-### firebase node 10 version upgrade
-
-
-### node module change
-https://www.npmjs.com/package/n
-$ sudo n 10.8
-$ sudo n stable 이런식..
-
-### firebase rules
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2020, 11, 24);
-    }
-  }
-}
+comment
+![스크린샷 2020-11-02 02 33 37](https://user-images.githubusercontent.com/49246683/97810096-b4539680-1cb4-11eb-8362-1e2be927fd87.png)
