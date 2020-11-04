@@ -1,4 +1,4 @@
-# Vue$firebase boarder site
+# Vue&firebase boarder site
 
 * Front-end
   -  Vue.js
