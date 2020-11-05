@@ -195,7 +195,7 @@ export default {
     },
     onEditorLoad (v) {
       const el = v.preview.el
-      this.html = addYoutubeIframe(el)
+      this.html = addYoutubeIframe(el, this.$vuetify.breakpoint)
       // console.log(el.firstChild.children)
       // for (const c of el.firstChild.children) {
       //   const span = document.createElement('span')
