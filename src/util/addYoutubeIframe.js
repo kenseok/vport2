@@ -33,9 +33,9 @@ export default (el, bp) => {
   items.forEach(p => {
     p.doc.parentNode.insertBefore(setIframe(p.id), p.doc)
     p.doc.parentNode.insertBefore(document.createElement('br'), p.doc)
-    p.doc.parentNode.insertBefore(document.createElement('p'), p.doc.nextSibiling)
+    p.doc.parentNode.insertBefore(document.createElement('p'), p.doc.nextSibling)
   })
-  console.log(el)
+  // console.log(el)
 
   return el.innerHTML
 }

@@ -6,7 +6,7 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-container fluid v-else-if="loaded && !items.length">
+  <v-container fluid v-else-if="(loaded && !items.length) && (!user || (user && user.level > 0))">
     <v-alert type="warning" border="left" class="mb-0">
       게시판이 없습니다
     </v-alert>
@@ -49,7 +49,7 @@
           <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="(item) in items" :key="item.id">
             <v-card height="100%">
               <v-subheader>
-                <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
+                <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
                 {{item.title}}
                 <v-spacer/>
                 <template v-if="user && user.level === 0">
@@ -244,6 +244,14 @@ export default {
       if (isIntersecting) this.more()
     },
     async remove (item) {
+      const r = await this.$swal.fire({
+        title: '정말 삭제하시겠습니까?',
+        text: '삭제 후 되돌릴 수 없습니다.',
+        icon: 'error',
+        // confirmButtonText: 'Cool',
+        showCancelButton: true
+      })
+      if (!r.value) return
       await this.$firebase.firestore()
         .collection('boards').doc(item.id).delete()
       const i = this.items.findIndex(el => el.id === item.id)
