@@ -219,7 +219,8 @@ export default {
       this.$router.push({ path: this.$route.path, query: { action: 'write' } })
     },
     async remove () {
-      await this.ref.delete()
+      this.$toasted.global.notice('메세지테스트')
+      // await this.ref.delete()
     },
     back () {
       const us = this.$route.path.split('/')
