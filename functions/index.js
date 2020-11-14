@@ -60,9 +60,9 @@ exports.onDeleteBoard = functions.region(region).firestore
   })
 
 const removeOldTempFiles = async () => {
-  // const moment = require('moment')
+  const moment = require('moment')
   const sn = await db.collection('tempFiles')
-    // .where('createdAt', '<', moment().subtract(1, 'hours').toDate())
+    .where('createdAt', '<', moment().subtract(1, 'hours').toDate())
     .orderBy('createdAt')
     .limit(5)
     .get()
@@ -250,3 +250,40 @@ exports.saveTempFiles = functions.region(region).storage
 //         .catch(e => console.error('tempFile remove err: ' + e.message))
 //     }
 //   })
+exports.seo = functions.https.onRequest(async (req, res) => {
+  const { parse } = require('node-html-parser')
+  const fs = require('fs')
+  const pluralize = require('pluralize')
+  const html = fs.readFileSync('index.html').toString()
+  const root = parse(html)
+
+  const ps = req.path.split('/')
+  ps.shift()
+  ps.forEach((v, i) => console.log(i, v))
+  if (ps.length !== 3) return res.send(html)
+  const mainCollection = pluralize(ps.shift())
+  const board = ps.shift()
+  const article = ps.shift()
+
+  const doc = await db.collection(mainCollection).doc(board).collection('articles').doc(article).get()
+
+  if (!doc.exists) return res.send(html)
+  const item = doc.data()
+
+  const child = root.lastChild.childNodes[0]
+  const titleNode = child.childNodes[0]
+  const descriptionNode = child.childNodes[1]
+  const ogTitleNode = child.childNodes[2]
+  const ogDescriptionNode = child.childNodes[3]
+  const ogImageNode = child.childNodes[4]
+
+  const title = item.title + ' : memi'
+  const description = item.summary.substr(0, 80)
+  const image = item.images.length ? item.images[0].thumbUrl : '/logo.png'
+  titleNode.set_content(title)
+  descriptionNode.setAttribute('content', description)
+  ogTitleNode.setAttribute('content', title)
+  ogDescriptionNode.setAttribute('content', description)
+  ogImageNode.setAttribute('content', image)
+  res.status(200).send(root.toString())
+})
